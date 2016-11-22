@@ -14,13 +14,7 @@
       "metadata": {
         "description": "Password for the Virtual Machine."
       }
-    },
-    "dnsNameForPublicIP": {
-      "type": "string",
-      "minLength": 1,
-      "metadata": {
-        "description": "Globally unique DNS Name for the Public IP used to access the Virtual Machine."
-      }
+    
     },
     "vmsize": {
       "type": "string",
@@ -84,7 +78,7 @@
         "displayName": "NetworkInterface"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+       
        
       ],
       "properties": {
@@ -93,8 +87,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
+             
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
