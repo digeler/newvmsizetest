@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -17,10 +17,19 @@
     },
     "vmsize": {
       "type": "string",
+      "defaultValue": "Basic_A3",
       "metadata": {
         "description": "vmsize Machine."
       }
     },
+    "vhdStorageName": {
+      "type": "string",
+      "defaultValue": "dinorvmext",
+      "metadata": {
+        "description": "storage"
+      }
+    },
+
     "windowsOSVersion": {
       "type": "string",
       "defaultValue": "2012-R2-Datacenter",
@@ -35,6 +44,7 @@
     },
     "virtualNetworkName": {
       "type": "string",
+      "defaultValue": "dinmig-vnet",
 
       "metadata": {
         "description": "existing vnet"
@@ -42,10 +52,30 @@
     },
     "Subnetname": {
       "type": "string",
+      "defaultValue": "default",
 
       "metadata": {
         "description": "existing subnet"
       }
+    },
+    "vhdStorageContainerName": {
+      "type": "string",
+      "defaultValue": "vhds",
+
+      "metadata": {
+        "description": "existing subnet"
+      }
+    },
+    "fortestsizeonlyType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
     }
   },
   "variables": {
@@ -56,7 +86,7 @@
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "Subnet",
     "subnetPrefix": "10.0.0.0/24",
-    "vhdStorageType": "Standard_LRS",
+    
     "publicIPAddressName": "myPublicIP",
     "publicIPAddressType": "Dynamic",
     "vhdStorageContainerName": "vhds",
@@ -65,7 +95,8 @@
     "virtualNetworkName": "MyVNET",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters ('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
-    "vhdStorageName": "[concat('vhdstorage', uniqueString(resourceGroup().id))]"
+    "vhdStorageName": "[concat('vhdstorage', uniqueString(resourceGroup().id))]",
+      "fortestsizeonlyName": "[concat('fortestsizeonly', uniqueString(resourceGroup().id))]"
   },
   "resources": [
     {
@@ -104,7 +135,7 @@
         "displayName": "VirtualMachine"
       },
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageName'))]",
+       
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
       "properties": {
@@ -126,7 +157,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('https://', variables('vhdStorageName'), '.blob.core.windows.net/', variables('vhdStorageContainerName'), '/', variables('OSDiskName'), '.vhd')]"
+              "uri": "[concat('https://', parameters('vhdStorageName'), '.blob.core.windows.net/', parameters('vhdStorageContainerName'), '/', variables('OSDiskName'), '.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -140,10 +171,8 @@
           ]
         }
      
-      },
-      "resources": [
-        
-      ]
+      }
+
     }
   ]
 }
